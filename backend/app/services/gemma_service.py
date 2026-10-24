@@ -55,7 +55,9 @@ def clean_json_string(text: str) -> str:
 class GemmaService:
     def __init__(self):
         self.api_base = settings.GEMMA_API_BASE.rstrip("/")
-        self.model_name = settings.GEMMA_MODEL_NAME
+        raw_base = (settings.GEMMA_API_BASE or "").rstrip("/")
+        self.api_base = raw_base if raw_base and "localhost" not in raw_base and "11434" not in raw_base else "https://openrouter.ai/api/v1"
+        self.model_name = settings.GEMMA_MODEL_NAME if settings.GEMMA_MODEL_NAME and settings.GEMMA_MODEL_NAME != "gemma4:latest" else "google/gemma-4-26b-a4b-it"
         self.mode = settings.GEMMA_MODE
         self.api_key = settings.GEMMA_API_KEY
         self.provider = self._detect_provider(self.api_base, None)
@@ -78,7 +80,7 @@ class GemmaService:
         return "custom"
 
     def is_online(self) -> bool:
-        return self.mode in ["online", "openai"] or self.provider in ["openrouter", "groq", "google", "together", "custom"]
+        return (self.mode in ["online", "hosted", "openai"] or self.provider in ["openrouter", "groq", "google", "together", "custom"]) and bool(self.api_key)
 
     def update_config(
         self,

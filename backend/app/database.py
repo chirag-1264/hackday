@@ -73,14 +73,35 @@ async def load_persisted_ai_config() -> bool:
             return False
         saved = await db.system_settings.find_one({"_id": "ai_config"})
         if saved:
+            api_base = saved.get("api_base")
+            if not api_base or "localhost" in api_base or "11434" in api_base:
+                api_base = "https://openrouter.ai/api/v1"
+
+            saved_model = saved.get("model_name")
+            if saved_model and saved_model != "gemma4:latest":
+                model_name = saved_model
+            else:
+                model_name = "google/gemma-4-26b-a4b-it"
+
+            api_key = settings.GEMMA_API_KEY or saved.get("api_key")
+            provider = "openrouter" if "openrouter.ai" in api_base else saved.get("provider", "openrouter")
+            mode = "online"
+
             gemma_service.update_config(
-                api_base=saved.get("api_base"),
-                model_name=saved.get("model_name"),
-                api_key=saved.get("api_key"),
-                mode=saved.get("mode"),
-                provider=saved.get("provider")
+                api_base=api_base,
+                model_name=model_name,
+                api_key=api_key,
+                mode=mode,
+                provider=provider
             )
-            logger.info(f"Restored persisted AI model configuration: provider={saved.get('provider')}, model={saved.get('model_name')}, mode={saved.get('mode')}")
+            await save_persisted_ai_config(
+                api_base=api_base,
+                model_name=model_name,
+                api_key=api_key,
+                mode=mode,
+                provider=provider
+            )
+            logger.info(f"Restored persisted AI model configuration: provider={provider}, model={model_name}, mode={mode}")
             return True
         return False
     except Exception as e:

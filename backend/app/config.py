@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     # AI - Gemma 4
     GEMMA_API_BASE: str = os.environ.get("GEMMA_API_BASE", "https://openrouter.ai/api/v1")
-    GEMMA_MODEL_NAME: str = os.environ.get("GEMMA_MODEL_NAME", "google/gemma-2-9b-it")
+    GEMMA_MODEL_NAME: str = os.environ.get("GEMMA_MODEL_NAME", "google/gemma-4-26b-a4b-it")
     GEMMA_MODE: str = os.environ.get("GEMMA_MODE", "online")
     GEMMA_API_KEY: Optional[str] = os.environ.get("GEMMA_API_KEY", None)
     
