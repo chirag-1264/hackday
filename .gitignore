@@ -14,14 +14,13 @@ __pycache__/
 *.so
 .Python
 env/
-build/
+venv/
+.venv/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -30,6 +29,10 @@ wheels/
 .installed.cfg
 *.egg
 .pytest_cache/
+
+# Explicitly ensure frontend/src/lib is tracked (never ignored by generic Python rules)
+!frontend/src/lib/
+!frontend/src/lib/**
 
 # Environment variables
 .env
